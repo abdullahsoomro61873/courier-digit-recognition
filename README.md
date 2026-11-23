@@ -30,7 +30,7 @@ This project uses the `load_digits` dataset from Scikit-learn.
 
 A fixed random seed (`42`) is used for reproducibility.
 
-## Project Progress
+## Project Phases
 
 ### Phase 1 — Project Setup
 
@@ -136,6 +136,48 @@ A fixed random seed (`42`) is used for reproducibility.
 #### Evaluation Output
 
 - `results/evaluation_results.csv`
+
+## Phase 7 — Final Decision
+
+### 1. Best Model Selection
+
+The **Regularized Big Model** was selected as the final model because it achieved the highest test accuracy of **92.24%** among all three models.
+
+### 2. Why Did the Small Model Underfit?
+
+- The Small Model contains only one linear layer.
+- Its architecture has limited learning capacity.
+- It could not learn complex patterns effectively.
+- Its training loss was 0.239137 and validation loss was 0.406256.
+
+Therefore, the Small Model showed underfitting because its architecture was too simple for the task.
+
+### 3. Why Did the Big Model Overfit?
+
+- The Big Model contains two hidden layers with 256 neurons each.
+- It learned the training data extremely well.
+- Its training loss decreased to 0.000174.
+- However, its validation loss was 0.281864.
+
+The large difference between training and validation loss indicates overfitting. The model learned the training data better than it generalized to unseen data.
+
+### 4. Why Was the Regularized Big Model Selected?
+
+- Used Dropout with a rate of 0.3.
+- Applied weight decay of 0.05.
+- Used early stopping with a patience of 30 epochs.
+- Achieved the lowest validation loss of 0.247271.
+- Achieved the highest test accuracy of 92.24%.
+
+Regularization helped control overfitting and improved generalization.
+
+### 5. Final Decision
+
+The Regularized Big Model is selected for shipping because it achieved the best overall evaluation results.
+
+**Final Statement:**
+
+The Regularized Big Model ships with 92.24% test accuracy, and the most valuable next improvement would be collecting more labelled images of real courier pincodes to evaluate and improve performance on real-world data.
 
 ## Project Structure
 
@@ -252,12 +294,12 @@ This loads the saved checkpoints, evaluates all three models on the test dataset
 - Matplotlib
 - Seaborn
 
-## Project Status
+## Final Project Status
 
-**Completed:** Phase 1–6
+**Project Status:** Completed
 
-**Current Best Model:** Regularized Big Model
+**Selected Model:** Regularized Big Model
 
-**Best Test Accuracy:** 92.24%
+**Test Accuracy:** 92.24%
 
-**Next Milestone:** Phase 7 — Final Model Selection
+**Best Validation Loss:** 0.247271
