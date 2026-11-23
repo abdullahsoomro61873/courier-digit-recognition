@@ -217,7 +217,7 @@ The following steps describe how to set up and run the project on Windows using 
 ### 1. Clone the GitHub Repository
 
 ```powershell
-git clone "https://github.com/abdullahsoomro61873/courier-digit-recognition"
+git clone https://github.com/abdullahsoomro61873/courier-digit-recognition
 ```
 
 ### 2. Open the Project Directory
