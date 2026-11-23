@@ -50,7 +50,28 @@ A fixed random seed (`42`) is used for reproducibility.
 - Implemented Regularized Big Model with Dropout (0.3).
 - Configured weight decay (0.05).
 - Configured early stopping (patience: 30).
-- Successfully tested all three models and configurations.
+- Successfully tested all three models and configurations with output shape (4, 10).
+
+### Phase 4 - Training
+- Developed one common training loop for all three models.
+- Trained all three models for up to 300 epochs.
+- Recorded training and validation loss after every epoch.
+- Saved training history in `results/training_history.csv`.
+- Saved the best checkpoint of the third model in `models/regularized_big_model.pth`.
+- Implemented early stopping with patience of 30 epochs.
+- Generated loss curves in `results/curves.png`.
+
+#### Training Results
+| Model | Epochs |
+|---|---:|
+| Small Model | 300 |
+| Big Model | 300 |
+| Regularized Big Model | 80 |
+| Total Records | 680 |
+
+- Best validation loss: 0.2473
+- Best epoch: 50
+- Early stopping: Epoch 80
 
 ### Upcoming Work
 - Build three neural network models.
