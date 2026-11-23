@@ -22,7 +22,7 @@ from src.training_config import (
 
 
 # --------------------------------------------------
-# 1. Set random seeds
+# 1. Set random seeds for reproducibility
 # --------------------------------------------------
 
 def set_seed(seed):
@@ -38,7 +38,7 @@ set_seed(SEED)
 
 
 # --------------------------------------------------
-# 2. Select device
+# 2. Select training device (GPU or CPU)
 # --------------------------------------------------
 
 device = torch.device(
@@ -49,7 +49,7 @@ print("Using device:", device)
 
 
 # --------------------------------------------------
-# 3. Load prepared datasets
+# 3. Load prepared training and validation datasets
 # --------------------------------------------------
 
 data_dir = Path("data")
@@ -103,6 +103,9 @@ criterion = nn.CrossEntropyLoss()
 
 def run_epoch(model, loader, optimizer=None):
 
+    # If optimizer is provided, perform training.
+    # Otherwise, perform validation.
+
     training = optimizer is not None
 
     if training:
@@ -120,6 +123,8 @@ def run_epoch(model, loader, optimizer=None):
 
         if training:
             optimizer.zero_grad()
+
+        # Enable gradients only during training
 
         with torch.set_grad_enabled(training):
 
@@ -139,7 +144,7 @@ def run_epoch(model, loader, optimizer=None):
 
 
 # --------------------------------------------------
-# 7. Train one model
+# 7. Train one model and save its best checkpoint
 # --------------------------------------------------
 
 def train_model(
@@ -149,7 +154,11 @@ def train_model(
     use_early_stopping=False
 ):
 
+    # Move model to selected device
+
     model = model.to(device)
+
+    # AdamW optimizer
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
@@ -157,20 +166,41 @@ def train_model(
         weight_decay=weight_decay
     )
 
+    # Store training and validation losses
+
     history = {
         "train_loss": [],
         "val_loss": []
     }
 
+    # Track the best validation performance
+
     best_val_loss = float("inf")
     best_state = None
-    patience_counter = 0
     best_epoch = 0
+
+    # Early stopping counter
+
+    patience_counter = 0
+
+    # Create models directory if it does not exist
 
     models_dir = Path("models")
     models_dir.mkdir(exist_ok=True)
 
+    # Checkpoint filenames for all three models
+
+    checkpoint_names = {
+        "Small Model": "small_model.pth",
+        "Big Model": "big_model.pth",
+        "Regularized Big Model": "regularized_big_model.pth"
+    }
+
+    # Training loop
+
     for epoch in range(1, MAX_EPOCHS + 1):
+
+        # Calculate training loss
 
         train_loss = run_epoch(
             model,
@@ -178,13 +208,19 @@ def train_model(
             optimizer
         )
 
+        # Calculate validation loss
+
         val_loss = run_epoch(
             model,
             val_loader
         )
 
+        # Store losses for this epoch
+
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)
+
+        # Display progress
 
         print(
             f"{model_name} | "
@@ -193,27 +229,35 @@ def train_model(
             f"Validation Loss: {val_loss:.4f}"
         )
 
-        # Save best model and apply early stopping
+        # Check whether validation loss improved
+
         if val_loss < best_val_loss:
 
             best_val_loss = val_loss
             best_epoch = epoch
+
+            # Copy the best model weights
+
             best_state = copy.deepcopy(model.state_dict())
+
+            # Reset early stopping counter
+
             patience_counter = 0
 
-            # Save checkpoint only for Model 3
-            if use_early_stopping:
+            # Save best checkpoint for this model
 
-                torch.save(
-                    {
-                        "model_state_dict": best_state,
-                        "epoch": best_epoch,
-                        "best_val_loss": best_val_loss
-                    },
-                    models_dir / "regularized_big_model.pth"
-                )
+            torch.save(
+                {
+                    "model_state_dict": best_state,
+                    "epoch": best_epoch,
+                    "best_val_loss": best_val_loss
+                },
+                models_dir / checkpoint_names[model_name]
+            )
 
         else:
+
+            # Apply early stopping only to Regularized Big Model
 
             if use_early_stopping:
 
@@ -224,11 +268,15 @@ def train_model(
                     print(
                         f"Early stopping at epoch {epoch}"
                     )
+
                     break
 
-    # Restore best weights for Model 3
+    # Restore the best weights for Regularized Big Model
+
     if use_early_stopping and best_state is not None:
         model.load_state_dict(best_state)
+
+    # Display final training information
 
     print(
         f"{model_name} completed. "
@@ -240,7 +288,7 @@ def train_model(
 
 
 # --------------------------------------------------
-# 8. Train all three models
+# 8. Define all three models
 # --------------------------------------------------
 
 models = [
@@ -264,9 +312,16 @@ models = [
     }
 ]
 
+
+# --------------------------------------------------
+# 9. Train all three models
+# --------------------------------------------------
+
 histories = {}
 
 for item in models:
+
+    # Reset seed before training each model
 
     set_seed(SEED)
 
@@ -278,9 +333,8 @@ for item in models:
     )
 
 
-
 # --------------------------------------------------
-# 8.5 Save training history to CSV
+# 10. Save training history to CSV
 # --------------------------------------------------
 
 results_dir = Path("results")
@@ -292,6 +346,8 @@ with open(csv_path, "w", newline="") as file:
 
     writer = csv.writer(file)
 
+    # CSV column headings
+
     writer.writerow([
         "Model",
         "Epoch",
@@ -299,10 +355,15 @@ with open(csv_path, "w", newline="") as file:
         "Validation Loss"
     ])
 
+    # Save each model's epoch-wise losses
+
     for model_name, history in histories.items():
 
         for epoch, (train_loss, val_loss) in enumerate(
-            zip(history["train_loss"], history["val_loss"]),
+            zip(
+                history["train_loss"],
+                history["val_loss"]
+            ),
             start=1
         ):
 
@@ -315,24 +376,29 @@ with open(csv_path, "w", newline="") as file:
 
 print("Training history saved to", csv_path)
 
-# --------------------------------------------------
-# 9. Plot training and validation loss curves
-# --------------------------------------------------
 
-results_dir = Path("results")
-results_dir.mkdir(exist_ok=True)
+# --------------------------------------------------
+# 11. Plot training and validation loss curves
+# --------------------------------------------------
 
 plt.figure(figsize=(12, 7))
 
 for model_name, history in histories.items():
 
-    epochs = range(1, len(history["train_loss"]) + 1)
+    epochs = range(
+        1,
+        len(history["train_loss"]) + 1
+    )
+
+    # Plot training loss using solid line
 
     plt.plot(
         epochs,
         history["train_loss"],
         label=f"{model_name} - Training"
     )
+
+    # Plot validation loss using dashed line
 
     plt.plot(
         epochs,
@@ -341,18 +407,36 @@ for model_name, history in histories.items():
         label=f"{model_name} - Validation"
     )
 
+
+# Add graph labels and title
+
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
-plt.title("Training and Validation Loss Curves")
+
+plt.title(
+    "Training and Validation Loss Curves"
+)
 
 plt.legend()
 plt.grid(True)
 
 plt.tight_layout()
 
-plt.savefig(results_dir / "curves.png")
+# Save final graph
+
+plt.savefig(
+    results_dir / "curves.png"
+)
 
 plt.close()
 
+
+# --------------------------------------------------
+# 12. Training completion message
+# --------------------------------------------------
+
 print("\nAll models training completed!")
+
 print("Loss curves saved to results/curves.png")
+
+print("All three best model checkpoints saved in models/")
