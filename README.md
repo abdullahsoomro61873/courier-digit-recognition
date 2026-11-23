@@ -32,17 +32,25 @@ A fixed random seed (`42`) is used for reproducibility.
 
 ## Project Progress
 
-### Phase 0 — Project Setup
+### Phase 1 — Project Setup
 - Project directory created.
 - Python virtual environment configured.
 - Required libraries installed.
 - GitHub repository initialized and pushed.
 
-### Phase 1 — Data Preparation
+### Phase 2 — Data Preparation
 - Loaded the Scikit-learn digits dataset.
 - Scaled pixel values to the range 0–1.
 - Split data into training, validation, and testing sets.
 - Saved processed datasets as NumPy `.npy` files.
+
+### Phase 3 - Model Development
+- Implemented Small Model with one linear layer.
+- Implemented Big Model with two hidden layers (256 neurons each).
+- Implemented Regularized Big Model with Dropout (0.3).
+- Configured weight decay (0.05).
+- Configured early stopping (patience: 30).
+- Successfully tested all three models and configurations.
 
 ### Upcoming Work
 - Build three neural network models.
