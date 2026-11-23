@@ -61,6 +61,21 @@ A fixed random seed (`42`) is used for reproducibility.
 - Implemented early stopping with patience of 30 epochs.
 - Generated loss curves in `results/curves.png`.
 
+### Phase 5 — Learning Curves
+
+- Plotted Small Model training and validation loss curves.
+- Plotted Big Model training and validation loss curves.
+- Plotted Regularized Big Model training and validation loss curves.
+- Compared training and validation loss for all three models.
+- Displayed all three experiments side by side in one image.
+- Saved the final visualization as `results/curves.png`.
+
+**Results**
+- Small Model: Underfitting observed.
+- Big Model: Overfitting observed.
+- Regularized Big Model: Training stopped at epoch 80; best validation loss was 0.2473 at epoch 50.
+- All three experiments successfully visualized in one image.
+
 #### Training Results
 | Model | Epochs |
 |---|---:|
