@@ -61,21 +61,6 @@ A fixed random seed (`42`) is used for reproducibility.
 - Implemented early stopping with patience of 30 epochs.
 - Generated loss curves in `results/curves.png`.
 
-### Phase 5 — Learning Curves
-
-- Plotted Small Model training and validation loss curves.
-- Plotted Big Model training and validation loss curves.
-- Plotted Regularized Big Model training and validation loss curves.
-- Compared training and validation loss for all three models.
-- Displayed all three experiments side by side in one image.
-- Saved the final visualization as `results/curves.png`.
-
-**Results**
-- Small Model: Underfitting observed.
-- Big Model: Overfitting observed.
-- Regularized Big Model: Training stopped at epoch 80; best validation loss was 0.2473 at epoch 50.
-- All three experiments successfully visualized in one image.
-
 #### Training Results
 | Model | Epochs |
 |---|---:|
@@ -88,12 +73,27 @@ A fixed random seed (`42`) is used for reproducibility.
 - Best epoch: 50
 - Early stopping: Epoch 80
 
+### Phase 5 — Learning Curves
+
+- Plotted Small Model training and validation loss curves.
+- Plotted Big Model training and validation loss curves.
+- Plotted Regularized Big Model training and validation loss curves.
+- Compared training and validation loss for all three models.
+- Displayed all three experiments side by side in one image.
+- Saved the final visualization as `results/curves.png`.
+
+#### Results
+
+- Small Model: Underfitting observed.
+- Big Model: Overfitting observed.
+- Regularized Big Model: Training stopped at epoch 80; best validation loss was 0.2473 at epoch 50.
+- All three experiments successfully visualized in one image.
+
+#### Learning Curves Diagram
+
+![Training and Validation Loss Curves](results/curves.png)
+
 ### Upcoming Work
-- Build three neural network models.
-- Train models for up to 300 epochs.
-- Record training and validation loss after every epoch.
-- Apply dropout, weight decay, and early stopping.
-- Plot loss curves.
 - Evaluate test accuracy.
 - Select the best model for shipping.
 
@@ -145,12 +145,14 @@ python src/prepare_data.py
 
 - Python
 - NumPy
+- Pandas
 - Scikit-learn
-- PyTorch
 - Matplotlib
+- Seaborn
+- PyTorch
 
 ## Status
 
-**Currently completed:** Project setup and data preparation.
+**Currently completed:** Phase 5: Learning curve
 
-**Next milestone:** Neural network model development and training.
+**Next milestone:** Phase 6: Evaluation
